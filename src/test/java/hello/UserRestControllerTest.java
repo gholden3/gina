@@ -7,10 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -45,9 +48,15 @@ public class UserRestControllerTest {
 
     @Test
     public void createUserSavesUser() {
-        HttpEntity<User> httpEntity = new HttpEntity<>(new User("@gina"));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        restTemplate.postForEntity("http://localhost:" + port + "/users", httpEntity, String.class);
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+        map.add("name", "@gina");
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        restTemplate.postForEntity("http://localhost:" + port + "/users", request, String.class);
         assertThat(userRepository.findByName("@gina").size()).isGreaterThan(0);
     }
 }

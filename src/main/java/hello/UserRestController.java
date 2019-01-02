@@ -18,7 +18,6 @@ class UserRestController {
         this.userRepository = userRepository;
     }
 
-    @CrossOrigin
     @GetMapping
     public String getUsers(Model model) {
         Collection<User> users = this.userRepository.findAll();
@@ -27,10 +26,10 @@ class UserRestController {
     }
 
     @PostMapping
-    public String createUser(@RequestBody User user) {
+    public String createUser(@ModelAttribute User user) {
         User newUser = new User(user.getName());
         userRepository.save(newUser);
-        return "newUser";
+        return "redirect:/users";
     }
 
     @GetMapping(value = "/new")
