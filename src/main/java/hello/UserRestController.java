@@ -27,8 +27,7 @@ class UserRestController {
 
     @PostMapping
     public String createUser(@ModelAttribute User user) {
-        User newUser = new User(user.getName());
-        userRepository.save(newUser);
+        userRepository.save(user);
         return "redirect:/users";
     }
 

@@ -1,26 +1,34 @@
 package hello;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@RunWith(SpringRunner.class)
-@AutoConfigureMockMvc
+@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
-public class UserRestControllerMockMvcTest {
-    @Autowired
+public class UserRestControllerMockMvcWithMockitoTest {
     private MockMvc mockMvc;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
+
+    private UserRestController userRestController;
+
+    @Before
+    public void setUp() throws Exception {
+        userRestController = new UserRestController(userRepository);
+        mockMvc = MockMvcBuilders.standaloneSetup(userRestController).build();
+    }
 
     @Test
     public void shouldReturnDefaultMessage() throws Exception {
@@ -29,6 +37,6 @@ public class UserRestControllerMockMvcTest {
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .content("name=controllerTest"));
 
-        assertThat(userRepository.findByName("controllerTest").size()).isGreaterThan(0);
+        verify(userRepository).save(eq(new User("controllerTest")));
     }
 }
